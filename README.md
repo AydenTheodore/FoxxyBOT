@@ -1,0 +1,2 @@
+# FoxxyBOT
+My bot data.
