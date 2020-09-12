@@ -1,2 +1,2 @@
 # FoxxyBOT
-My bot data.
+A project to make my bot always be online.
