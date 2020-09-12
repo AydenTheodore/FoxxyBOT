@@ -21,15 +21,7 @@ client.on('message', message => {
     message.channel.send(`Nome do servidor : ${message.guild.name}\nTotal de membros: ${message.guild.memberCount}\nData de criação: ${message.guild.createdAt}\nRegião: ${message.guild.region}`);
   } else 
   if (message.content === (`${prefix}userdata`)) {
-    if (!message.mentions.users.size) {
-      return message.channel.send(`Seu nome de usuário: ${message.author.username}\nSeu ID: ${message.author.id}\nAvatar: ${message.author.displayAvatarURL()}`);
-    const usersList = message.mentions.users.map(user => {
-      message.channel.send(`Nome de usuário: ${user.username}\eID: ${user.id}\eAvatar: ${user.displayAvatarURL}`);
-    });
-    // send the entire array of strings as a message
-    // by default, discord.js will `.join()` the array with `\n`
-    message.channel.send(usersList);
-    }
+      message.channel.send(`Seu nome de usuário: ${message.author.username}\nSeu ID: ${message.author.id}\nAvatar: ${message.author.displayAvatarURL()}`);
   } else 
   if (message.content.startsWith(`${prefix}clear`)) {
     const amount = parseInt(args[0]) + 1;
