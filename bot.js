@@ -26,7 +26,7 @@ client.on('message', message => {
   if (message.content.startsWith(`${prefix}clear`)) {
     const amount = parseInt(args[0]) + 1;
     if (isNaN(amount)) {
-      return message.reply('esse não parece ser um número válido.');
+      return message.reply ('esse não parece ser um número válido.');
       } else if (amount <= 1 || amount > 100) {
       return message.reply('você tem que colocar um número entre 1 e 99.');
     }
