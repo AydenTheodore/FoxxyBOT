@@ -74,13 +74,8 @@ client.on('message', message => {
 });
 
 client.on('ready', () => {
-    bot.user.setStatus('available')
-    bot.user.setPresence({
-        game: {
-            name: ':sunglasses: A cool bot in a cool server',
-            type: "CUSTOM",
-        }
-    });
+    bot.user.setStatus('Online');
+    bot.user.setGame("-help")
 });
 
 client.login(token);
