@@ -74,8 +74,8 @@ client.on('message', message => {
 });
 
 client.on('ready', () => {
-    bot.user.setStatus('Online');
-    bot.user.setGame("-help")
+    client.user.setStatus('dnd')
+    client.user.setActivity('-help', {type: "WATCHING"}).catch(console.error);
 });
 
 client.login(token);
