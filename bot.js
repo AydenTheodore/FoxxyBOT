@@ -75,7 +75,7 @@ client.on('message', message => {
 
 client.on('ready', () => {
     client.user.setStatus('dnd')
-    client.user.setActivity('-help', {type: "WATCHING"}).catch(console.error);
+    client.user.setActivity("Meu prefixo é -, recomendo usar -help!", {type: "PLAYING"}).catch(console.error);
 });
 
 client.login(token);
