@@ -1,39 +1,86 @@
+const fs = require('fs');
 const Discord = require('discord.js');
-const client = new Discord.Client();
-const {prefix, token} = require('./config.json');
+const { prefix, token } = require('./config.json');
 
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	client.commands.set(command.name, command);
+}
+
+const cooldowns = new Discord.Collection();
+
+client.once('ready', () => {
+	console.log(`Logged in as ${client.user.tag}!`);
 });
-client.login(token);
+
+
 
 client.on('message', message => {
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-  const args = message.content.slice(prefix.length).trim().split(' ');
-  const command = args.shift().toLowerCase();
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const commandName = args.shift().toLowerCase();
 
-  if (message.content.startsWith(`${prefix}say`)) {
-    message.delete();
-    message.channel.send(message.content.replace(`${prefix}say`, ''));
-  } else 
-  if (message.content === (`${prefix}serverdata`)) {
-    message.channel.send(`Nome do servidor : ${message.guild.name}\nTotal de membros: ${message.guild.memberCount}\nData de criação: ${message.guild.createdAt}\nRegião: ${message.guild.region}`);
-  } else 
-  if (message.content === (`${prefix}userdata`)) {
-      message.channel.send(`Seu nome de usuário: ${message.author.username}\nSeu ID: ${message.author.id}\nAvatar: ${message.author.displayAvatarURL()}`);
-  } else 
-  if (message.content.startsWith(`${prefix}clear`)) {
-    const amount = parseInt(args[0]) + 1;
-    if (isNaN(amount)) {
-      return message.reply ('esse não parece ser um número válido.');
-      } else if (amount <= 1 || amount > 100) {
-      return message.reply('você tem que colocar um número entre 1 e 99.');
-    }
-    message.channel.bulkDelete(amount, true).catch(err => {
-      console.error(err);
-      message.channel.send('Houve um erro tentando apagar mensagens neste canal!');
-    });
-    message.reply(`eu deletei ${amount} mensagens, conforme pediu.`);
-  }
+	const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+	if (!command) return;
+
+	if (command.guildOnly && message.channel.type === 'dm') {
+		return message.reply('Eu não posso executar esse comando dentro de DMs!');
+	}
+
+	if (command.args && !args.length) {
+		let reply = `Você não deu nenhum argumento, ${message.author}!`;
+
+		if (command.usage) {
+			reply += `\nO uso correto seria: \`${prefix}${command.name} ${command.usage}\``;
+		}
+
+		return message.channel.send(reply);
+	}
+
+	if (!cooldowns.has(command.name)) {
+		cooldowns.set(command.name, new Discord.Collection());
+	}
+
+	const now = Date.now();
+	const timestamps = cooldowns.get(command.name);
+	const cooldownAmount = (command.cooldown || 3) * 1000;
+
+	if (timestamps.has(message.author.id)) {
+		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+		if (now < expirationTime) {
+			const timeLeft = (expirationTime - now) / 1000;
+			return message.reply(`por favor espere ${timeLeft.toFixed(1)} segundo(s) antes de usar o comando\`${command.name}\`!`);
+		}
+	}
+
+	timestamps.set(message.author.id, now);
+	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
+	try {
+		command.execute(message, args);
+	} catch (error) {
+		console.error(error);
+		message.reply('houve um erro tentando executar aquele comando!');
+	}
 });
+
+client.on('ready', () => {
+    bot.user.setStatus('available')
+    bot.user.setPresence({
+        game: {
+            name: ':sunglasses: A cool bot in a cool server',
+            type: "CUSTOM",
+        }
+    });
+});
+
+client.login(token);
