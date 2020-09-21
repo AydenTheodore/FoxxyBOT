@@ -2,32 +2,30 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 
-const bot = new Discord.Client();
-bot.commands = new Discord.Collection();
+const client = new Discord.Client();
+client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
-	bot.commands.set(command.name, command);
+	client.commands.set(command.name, command);
 }
 
 const cooldowns = new Discord.Collection();
 
-bot.once('ready', () => {
+client.once('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
-
-
-bot.on('message', message => {
+client.on('message', message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
-	const command = bot.commands.get(commandName)
-		|| bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+	const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (!command) return;
 
@@ -73,9 +71,15 @@ bot.on('message', message => {
 	}
 });
 
-bot.on('ready', () => {
-    bot.user.setStatus('dnd')
-    bot.user.setActivity("Meu prefixo é -, recomendo usar -help!", {type: "PLAYING"}).catch(console.error);
+client.on('guildMemberAdd', member =>{
+	const channel = member.guild.channels.cache.find(ch => ch.name.startsWith("ge"))
+	if(!channel) return;
+	channel.send(`Bem vindo ao nosso server, ${member}, por favor leia as regras antes de conversar no server! :wink:`)
 });
 
-bot.login(token);
+client.on('ready', () => {
+    client.user.setStatus('Online')
+    client.user.setActivity(`${prefix}help`, {type: "WATCHING"}).catch(console.error);
+});
+
+client.login(token);
