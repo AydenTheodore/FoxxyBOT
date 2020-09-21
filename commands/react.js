@@ -11,12 +11,9 @@ module.exports = {
 		if (args[0] === 'hearty_eyes') {
 			message.react("<:hearty_eyes:754846478794489926>");
 		} else
-		if (args[0] === message.id) {
-			
-		}
 		msg.channel.messages.fetch(args[0])
  			.then(message => console.log(message.content))
   			.catch(console.error);
-		message.react(args[1]);
+		message.react(args[0]);
 	},
 };
