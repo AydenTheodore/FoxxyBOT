@@ -7,8 +7,7 @@ module.exports = {
 	execute(message, args) {
 		if (!args.lenght) {
 			message.channel.send(`Você tem que dar o nome de algum emoji!`);
-		}
-		
+		} else
 		message.react(args.join(''));
 	},
 };
