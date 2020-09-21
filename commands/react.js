@@ -5,8 +5,11 @@ module.exports = {
 	name: 'react',
 	description: "Reagirei da maneira que desejar.",
 	execute(message, args) {
-		if (!args.lenght) {
-			message.channel.send(`Você tem que dar o nome de algum emoji!`);
+		if (args[0] === 'sad') {
+			message.react(`${sad}`);
+		} else
+		if (args[0] === 'hearty_eyes') {
+			message.react(`${heartyeyes}`);
 		} else
 		message.react(args.join(''));
 	},
