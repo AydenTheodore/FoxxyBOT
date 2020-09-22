@@ -14,6 +14,6 @@ module.exports = {
 		msg.channel.messages.fetch(args[0])
  			.then(message => console.log(message.content))
   			.catch(console.error);
-		message.react(args[0]);
+		message.react(:potato:);
 	},
 };
