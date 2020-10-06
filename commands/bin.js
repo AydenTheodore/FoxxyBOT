@@ -32,18 +32,37 @@ module.exports = {
 				// first (and, in this case, only) message of the collection
 				if (collected.first().content.toLowerCase() === number) {
 					attempt.react('✅');
-					return message.channel.send(`🎉 Parabéns, ${message.author}, você acertou!! 🎉\n**Número escolhido:** ${number}`);
+					message.channel.send(`🎉 Parabéns, ${message.author}, você acertou!! 🎉\n**Número escolhido:** ${number}`);
 				} else
-				attempt.react('❌');
-				call();
+				if(attempt > number){
+					message.channel.send("Meu número é menor que esse");
+					attempt.react('➖');
+					call();
+				} else
+				if(attempt < number){
+					message.channel.send("Meu número é maior que esse");
+					attempt.react('➕');
+					call();
+				} else
+				if(attempt === 'stop'){
+					message.channel.send('Certeza de que deseja fazer isso?');
+					message.channel.awaitMessages(m => m.author.id == message.author.id, {max: 1, time: 60000})
+					.then(collected => {
+						if (collected.first().content.toLowerCase() == 'sim') {
+							attempt.react('✅');
+							message.channel.send(`😔 Lamento que você tenha desistido... Bem, você pode tentar de novo! Ah, aliás, o número era **${number}**! 😉`);
+						} else
+						message.channel.send('Operação cancelada. Você já pode continuar a jogar.');
+						call();
+					});
+				}
 			}).catch(() => {
-				message.channel.send(`Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
+				if(!attempt) return message.channel.send(`🤔 Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
 			});
 		};
 		var call = function(){
 			answer();
 		};
-		
 		message.channel.awaitMessages(m => m.author.id == message.author.id, {max: 1, time: 60000})
 		.then(collected => {
 			// only accept messages by the user who sent the command
@@ -54,10 +73,30 @@ module.exports = {
 				attempt.react('✅');
 				message.channel.send(`🎉 Parabéns, ${message.author}, você acertou!! 🎉\n**Número escolhido:** ${number}`);
 			} else
-			attempt.react('❌');
-			answer();
+			if(attempt > number){
+				message.channel.send("Meu número é menor que esse");
+				attempt.react('➖');
+				answer();
+			} else
+			if(attempt < number){
+				message.channel.send("Meu número é maior que esse");
+				attempt.react('➕');
+				answer();
+			} else
+			if(attempt === 'stop'){
+				message.channel.send('Certeza de que deseja fazer isso?');
+				message.channel.awaitMessages(m => m.author.id == message.author.id, {max: 1, time: 60000})
+				.then(collected => {
+					if (collected.first().content.toLowerCase() == 'sim') {
+						attempt.react('✅');
+						message.channel.send(`😔 Lamento que você tenha desistido... Bem, você pode tentar de novo! Ah, aliás, o número era **${number}**! 😉`);
+					} else
+					message.channel.send('Operação cancelada. Você já pode continuar a jogar.');
+					answer();
+				});
+			}
 		}).catch(() => {
-			if(!attempt) return message.channel.send(`Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
+			if(!attempt) return message.channel.send(`🤔 Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
 		});
 	},
 };
