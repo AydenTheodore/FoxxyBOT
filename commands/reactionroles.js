@@ -9,11 +9,11 @@ module.exports = {
 	execute(message, args) {
 		var role = args[0];
 		var title = args[1];
-		var desc = args[2];
+		var desc = args.slice(2).join(" ");
 
 		if(!role) return message.reply("mencione um cargo **válido**!");
 		if(!title) title = "Reaction-Role";
-		if(!desc) desc = "Reaja com ✅ para consegui-la!";
+		if(!desc) desc = `Reaja com ✅ para conseguir o cargo de ${role}!`;
 
 		const embed = new Discord.MessageEmbed()
 			.setTitle(title)
@@ -25,7 +25,7 @@ module.exports = {
 		.then(function(message) {
 			message.react("✅");
 		}).catch(function(error) {
-			message.reply("houve um erro!");
+			message.reply("não consegui reagir à mensagem!");
 		});
 
 		client.on('messageReactionAdd', (reaction, user) => {
@@ -35,7 +35,7 @@ module.exports = {
 				// We don't have the member, but only the user...
 				// Thanks to the previous part, we know how to fetch it
 				message.guild.fetchMember(user.id).then(member => {
-					member.addRole(role.id);
+					member.roles.add(role.id);
 				});
 			}
 		});

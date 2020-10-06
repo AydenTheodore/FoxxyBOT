@@ -19,6 +19,7 @@ module.exports = {
 			.setColor("#730000")
 			.addField('`-kick`', 'Expulsa um membro do seu server via menção ou ID')
 			.addField('`-ban`', 'Bane um membro do seu server via menção ou ID')
+			.addField('`-unban`', 'Revoga o banimento de um usuário via ID')
 			.addField('`-clear`', 'Deleta mensagens')
 			.setFooter(`Você pode enviar ${prefix}help [command name] para obter informações específicas sobre um comando!`)
 			.setTimestamp();
