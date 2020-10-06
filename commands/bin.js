@@ -36,11 +36,15 @@ module.exports = {
 					message.channel.send(`🎉 Parabéns, ${message.author}, você acertou!! 🎉\n**Número escolhido:** ${number}`);
 				} else
 				attempt.react('❌');
-				answer();
+				call();
 			}).catch(() => {
 				message.channel.send(`Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
 			});
 		};
+		var call = function(){
+			answer();
+		};
+		
 		message.channel.awaitMessages(m => m.author.id == message.author.id, {max: 1, time: 60000})
 		.then(collected => {
 			// only accept messages by the user who sent the command
