@@ -2,6 +2,10 @@ module.exports = {
 	name: 'reload',
 	description: 'Recarrega um comando.',
 	execute(message, args) {
+		const ownerID = "707197370898579496";
+
+		if(message.author.id !== ownerID) return message.reply(`lamento, porém você não tem permissão para usar este comando! <:blobowo:759888494805516298>`);
+
 		if (!args.length) return message.channel.send(`Você não me passou nenhum comando para recarregar, ${message.author}!`);
 		const commandName = args[0].toLowerCase();
 		const command = message.client.commands.get(commandName)

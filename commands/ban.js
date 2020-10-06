@@ -1,20 +1,39 @@
+const Discord = require('discord.js');
+const client = new Discord.Client();
+
 module.exports = {
-	name: 'ban',
-	description: "Apenas use se o membro já foi avisado várias vezes antes.",
-	execute(message, args) {
-		if (message.content.startsWith(`${prefix}ban`)) {
-			if (!message.guild.member(message.author).hasPermission('BAN_MEMBERS')) { return message.channel.send("Você não tem permissão para banir membros!"); }
+	name: "ban",
+	description: "Bane um membro do server",
+	execute(message, args){
+		if(!message.member.hasPermission("BAN_MEMBERS")) return message.reply('você não pode usar esse comando!')
+		if(!message.guild.me.hasPermission("BAN_MEMBERS")) return message.reply("Permissões insuficientes. Certifique-se de que eu tenho a permissão de `Banir membros`.")
 
-			if (!message.guild.member(client.user).hasPermission('BAN_MEMBERS')) { return message.channel.send("Eu não tenho permissão para banir membros!"); }
+		const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
-			if (message.mentions.users.size === 0) { return message.channel.send("VOcê tem que mencionar um usuário!"); }
-			let banMember = message.guild.member(message.mentions.users.first());
-			if (!banMember) { return message.channel.send(`Usuário não encontrado! ${sad}`); }
+		if(!args[0]) return message.reply('especifique um usuário');
 
-		        banMember.ban().then((member) => {
-            		message.channel.send(member.displayName + " saiu do server :pensive:")
-            		message.channel.send(member.displayName + " foi banido com sucesso por " + message.author);
-        		})
-    		}
-	},
-};
+		if(!member) return message.reply("não consegui achar esse usuário. Perdoe-me por isso 😭");
+
+		if(member.id === message.author.id) return message.reply('você não pode se banir! 🙄');
+
+		if(member.id === "718176833102807041") return message.reply('eu não posso me banir! 🙄');
+
+		if(!member.bannable) return message.reply('este usuário não pode ser banido, pois ele é um Mod/Admin, ou seu maior cargo é maior que o meu');
+
+		let reason = args.slice(1).join(" ");
+
+		if(reason === undefined) reason = 'Não especificado';
+
+		const banembed = new Discord.MessageEmbed()
+			.setTitle('Membro Banido')
+			.setThumbnail(member.user.displayAvatarURL())
+			.addField('Usuário Banido', member)
+			.addField('Banido por', message.author)
+			.addField('Motivo', reason)
+			.setFooter('Quando foi banido')
+			.setTimestamp();
+
+		message.guild.members.ban(member);
+		message.channel.send(banembed);
+    },
+}

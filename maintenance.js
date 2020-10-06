@@ -1,8 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { prefix, token } = require('./config.json');
-const { join } = require('path');
+const { prefix, token, ownerID } = require('./config.json');
 
 client.commands = new Discord.Collection();
 
@@ -15,27 +14,24 @@ for (const file of commandFiles) {
 
 const cooldowns = new Discord.Collection();
 
-client.on('ready', () => {
-	const servers = client.guilds.cache.size;
-	const status = [`${servers} servers`, `${prefix}help`, "algumas séries...", "tutoriais para me expandir!"];
-	const random = Math.floor(Math.random() * status.length);
-
-	console.log(`Logged in as ${client.user.tag} in ${servers} servers!`);
-	client.user.setStatus('Online')
-	client.user.setActivity(status[random], {type: "WATCHING"}).catch(console.error);
+client.on('ready', async () => {
+	console.log(`Logged in as ${client.user.tag} with Maintenance Mode!`);
+	client.user.setStatus('Idle')
+	client.user.setActivity(`🛠 Em manutenção...`, {type: "WATCHING"}).catch(console.error);
 });
 
 client.on('message', message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
+	if(message.author.id !== ownerID) return message.channel.send("🏗 Em manutenção, tente novamente mais tarde... 🛠");
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 
-	const banned = ["710544984096505897", "533301871608201239"];
+	const banned = ["732790870192947311", "710544984096505897", "672747450489896972"];
 	for(var b = 0; b < banned.length; b++) { //go through each element
-		if(message.author.id === banned[b]) { //if they match...
+			if(args.includes(banned[b])) { //if they match...
 			message.reply("você não pode usar isso, pois foi banido! <a:triggeredtato:759888514338127902>"); //...then moderate!
 			message.delete();
-			return console.log(`${message.author.tag}(banido) foi bloqueado tentando usar isso: ` + message.content);
+			return console.log(`${message.author.tag}(banido) foi bloqueado tentando enviar isso: ` + args.join(" "));
 		}
 	}
 

@@ -1,20 +1,39 @@
+const Discord = require('discord.js');
+const client = new Discord.Client();
+
 module.exports = {
-	name: 'kick',
-	description: "Kicka um membro irritante",
-	execute(message, args) {
-		if (message.content.startsWith(`${prefix}kick`)) {
-			if (!message.guild.member(message.author).hasPermission('KICK_MEMBERS')) { return message.channel.send("Você não tem permissão para kickar membros!"); }
+	name: "kick",
+	description: "Expulsa um membro do server",
+	execute(message, args){
+		if(!message.member.hasPermission("KICK_MEMBERS")) return message.reply('você não pode usar esse comando!')
+		if(!message.guild.me.hasPermission("KICK_MEMBERS")) return message.reply("permissões insuficientes. Certifique-se de que eu tenho a permissão de `Expulsar membros`.")
 
-			if (!message.guild.member(client.user).hasPermission('KICK_MEMBERS')) { return message.channel.send("Eu não tenho permissão para kickar membros!"); }
+		const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
-			if (message.mentions.users.size === 0) { return message.channel.send("Você tem que mencionar um usuário!"); }
-			let kickMember = message.guild.member(message.mentions.users.first());
-			if (!kickMember) { return message.channel.send(`Usuário não encontrado! ${sad}`); }
+		if(!args[0]) return message.reply('Especifique um usuário');
+		
+		if(!member) return message.reply("não consegui achar esse usuário. Perdoe-me por isso 😭");
 
-		        kickMember.kick().then((member) => {
-            		message.channel.send(member.displayName + " saiu do server. :pensive:")
-            		message.channel.send(member.displayName + " foi kickado com sucesso por " + message.author);
-        		});
-    		}
-	},
-};
+		if(member.id === message.author.id) return message.reply('você não pode se expulsar! 🙄');
+
+		if(member.id === "718176833102807041") return message.reply('eu não posso me expulsar! 🙄');
+
+		if(!member.kickable) return message.reply('este usuário não pode ser expulso, pois ele é um Mod/Admin, ou seu maior cargo é maior que o meu');
+
+		let reason = args.slice(1).join(" ");
+
+		if(reason === undefined) reason = 'Não especificado';
+
+		const kickembed = new Discord.MessageEmbed()
+			.setTitle('Membro Expulso')
+			.setThumbnail(member.user.displayAvatarURL())
+			.addField('Usuário Expulso', member)
+			.addField('Expulso por', message.author)
+			.addField('Motivo', reason)
+			.setFooter('Momento em que foi expulso')
+			.setTimestamp();
+
+		member.kick(reason);
+		message.channel.send(kickembed);
+    },
+}

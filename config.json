@@ -1,5 +1,11 @@
 {
   "token": "NzE4MTc2ODMzMTAyODA3MDQx.XxgzxQ.pMgLq0a6Z92e-tCozVfrtti6R0c",
   "prefix": "-",
-  "ownerID": "707197370898579496"
+  "ownerID": "707197370898579496",
+  "red": "#b70000",
+  "orange": "#ff6a00",
+  "green": "#00ff26",
+  "purple": "#d604cf",
+  "everyoneMention": false,
+  "hostedBy": true
 }
