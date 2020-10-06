@@ -22,15 +22,13 @@ module.exports = {
 		var random = Math.round(Math.random() * numbers.length);
 		var number = numbers[random];
 
-		message.channel.send(`Ok, ${message.author}, eu escolhi um número __entre **1** e **100**__. Tente achá-lo!`)
-		console.log(number);
-
-		for(var i = 0; i < 10; i++){
+		message.channel.send(`Ok, ${message.author}, eu escolhi um número __entre **1** e **100**__. Tente achá-lo!`);
+		
+		var answer = function(){
 			message.channel.awaitMessages(m => m.author.id == message.author.id, {max: 1, time: 60000})
 			.then(collected => {
 				// only accept messages by the user who sent the command
 				// accept only 1 message, and return the promise after 60000ms = 1min
-
 				var attempt = collected.first();
 				// first (and, in this case, only) message of the collection
 				if (collected.first().content.toLowerCase() === number) {
@@ -38,9 +36,25 @@ module.exports = {
 					message.channel.send(`🎉 Parabéns, ${message.author}, você acertou!! 🎉\n**Número escolhido:** ${number}`);
 				} else
 				attempt.react('❌');
-				}).catch(() => {
-					message.channel.send(`Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
-				});
+				answer();
+			}).catch(() => {
+				message.channel.send(`Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
+			});
 		};
+		message.channel.awaitMessages(m => m.author.id == message.author.id, {max: 1, time: 60000})
+		.then(collected => {
+			// only accept messages by the user who sent the command
+			// accept only 1 message, and return the promise after 60000ms = 1min
+			var attempt = collected.first();
+			// first (and, in this case, only) message of the collection
+			if (collected.first().content.toLowerCase() === number) {
+				attempt.react('✅');
+				message.channel.send(`🎉 Parabéns, ${message.author}, você acertou!! 🎉\n**Número escolhido:** ${number}`);
+			} else
+			attempt.react('❌');
+			answer();
+		}).catch(() => {
+			message.channel.send(`Sem ideias? Lamento, mas qualquer coisa, o número era **${number}**! 😉`);
+		});
 	},
 };
